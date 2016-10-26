@@ -3,7 +3,7 @@ SET NSIS=tools\nsis\makensis.exe
 SET NSSM=tools\nssm\win64\nssm.exe
 SET ZIP=tools\7zip\7za.exe
 
-SET VERSION=1.0.1
+SET VERSION=1.0.2
 SET ELASTIC_SEARCH_VERSION=5.0.0
 SET LOGSTASH_VERSION=5.0.0
 SET KIBANA_VERSION=5.0.0
@@ -26,7 +26,7 @@ mkdir temp
 
 move temp\elasticsearch-%ELASTIC_SEARCH_VERSION% temp\elasticsearch
 move temp\logstash-%LOGSTASH_VERSION% temp\logstash
-move temp\kibana-%KIBANA_VERSION%-windows temp\kibana
+move temp\kibana-%KIBANA_VERSION%-windows-x86 temp\kibana
 rem ------------------------------------
 
 rem ---------- Run makensis ----------
