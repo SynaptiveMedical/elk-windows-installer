@@ -3,10 +3,10 @@ SET NSIS=tools\nsis\makensis.exe
 SET NSSM=tools\nssm\win64\nssm.exe
 SET ZIP=tools\7zip\7za.exe
 
-SET VERSION=1.0.2
-SET ELASTIC_SEARCH_VERSION=5.0.0
-SET LOGSTASH_VERSION=5.0.0
-SET KIBANA_VERSION=5.0.0
+SET VERSION=5.3.0
+SET ELASTIC_SEARCH_VERSION=5.3.0
+SET LOGSTASH_VERSION=5.3.0
+SET KIBANA_VERSION=5.3.0
 
 rem ---------- Download packages ----------
 if not exist "downloads" mkdir downloads
