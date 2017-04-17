@@ -1,4 +1,4 @@
-; ELK (elasticsearch - logstash - kibana) windows installer nsis script
+; ELK (elasticsearch - kibana) windows installer nsis script
 ; Copyright (c) 2016 Luigi Grilli
 ;
 ; basic script template for NSIS installers
@@ -208,7 +208,7 @@ Section "Elasticsearch" Elasticsearch
   File /r "${srcdir}\elasticsearch\*"
   
   ; install elasticsearch service
-  ExecWait "$INSTDIR\elasticsearch\bin\service.bat install" $0
+  ExecWait "$INSTDIR\elasticsearch\bin\elasticsearch-service.bat install" $0
   ; set service to start automatically (delayed)
   ExecWait "sc config elasticsearch-service-x64 start=delayed-auto" $0
   
@@ -221,17 +221,6 @@ Section "Elasticsearch" Elasticsearch
   ExecWait "net start elasticsearch-service-x64" $0
 SectionEnd
 
-Section "Logstash" Logstash
-  SetOutPath $INSTDIR\logstash
-  File /r "${srcdir}\logstash\*"
-  
-  SetOutPath $INSTDIR\logstash\conf
-  File /r "conf\logstash\*"
-
-  ExecWait "$INSTDIR\scripts\logstash-install.bat" $0
-  ExecWait "net start logstash" $0
-SectionEnd
-
 Section "Kibana" Kibana
   SetOutPath $INSTDIR\kibana
   File /r "${srcdir}\kibana\*"
@@ -240,34 +229,6 @@ Section "Kibana" Kibana
   ExecWait "net start kibana" $0
 SectionEnd
 
-Section "Marvel (requires elasticsearch, kibana)" Marvel
-  ExecWait "$INSTDIR\scripts\marvel-install.bat" $0
-SectionEnd
-
-Section "Sense (requires kibana)" Sense
-  ExecWait "$INSTDIR\scripts\sense-install.bat" $0
-SectionEnd
-
-Function .onSelChange
-${If} ${SectionIsSelected} ${Elasticsearch}
-  ${If} ${SectionIsSelected} ${Kibana}
-    !insertmacro ClearSectionFlag ${Marvel} ${SF_RO}
-  ${Else}
-    !insertmacro UnselectSection ${Marvel}
-    !insertmacro SetSectionFlag ${Marvel} ${SF_RO}
-  ${EndIf}
-${Else}
-  !insertmacro UnselectSection ${Marvel}
-  !insertmacro SetSectionFlag ${Marvel} ${SF_RO}
-${EndIf}
-
-${IfNot} ${SectionIsSelected} ${Kibana}
-  !insertmacro UnselectSection ${Sense}
-  !insertmacro SetSectionFlag ${Sense} ${SF_RO}
-${Else}
-  !insertmacro ClearSectionFlag ${Sense} ${SF_RO}
-${EndIf}
-FunctionEnd
 
 ; Uninstaller
 ; All section names prefixed by "Un" will be in the uninstaller
@@ -281,20 +242,18 @@ UninstallIcon "${icon}"
 Section "Uninstall"
 
   ; stop services
-  ExecWait "net stop kibana"
-  ExecWait "net stop logstash"
+  ExecWait "net stop kibana"  
   ExecWait "net stop elasticsearch-service-x64"
 
   StrCpy $R0 "$INSTDIR"
   System::Call 'Kernel32::SetEnvironmentVariable(t, t) i("INSTDIR", R0).r0'
   StrCpy $R0 "$INSTDIR\nssm\win64\nssm.exe"
   System::Call 'Kernel32::SetEnvironmentVariable(t, t) i("NSSM", R0).r0'
-  
-  ExecWait "$INSTDIR\scripts\logstash-uninstall.bat" $0
+    
   ExecWait "$INSTDIR\scripts\kibana-uninstall.bat" $0
 
   ; uninstall elasticsearch service
-  ExecWait "$INSTDIR\elasticsearch\bin\service.bat remove"  
+  ExecWait "$INSTDIR\elasticsearch\bin\elasticsearch-service.bat remove"  
 
   DeleteRegKey HKLM "${uninstkey}"
   DeleteRegKey HKLM "${regkey}"
