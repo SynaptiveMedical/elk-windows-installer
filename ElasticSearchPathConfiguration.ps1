@@ -44,7 +44,7 @@ function Update-ElasticSearchConfiguration
         }
     }
 
-    Write-Host $ExecutionContext.InvokeCommand
+    Write-Host $MyInvocation.MyCommand
 
     if (-Not $ConfigFilePath -Or -Not (Test-Path $ConfigFilePath -PathType Leaf)) {
         Write-Host "Failed to locate elasticsearch configuration file: $ConfigFilePath." 
@@ -63,13 +63,7 @@ function Update-ElasticSearchConfiguration
 
     Set-Content $ConfigFilePath $FileLines
 
-	Restart-Service elasticsearch-service-x64 -Force -ErrorAction SilentlyContinue -ErrorVariable RestartError
-
-    if($RestartError) {
-        throw $RestartError
-    }
-
-    Write-Host "$($ExecutionContext.InvokeCommand) done."
+    Write-Host "$($MyInvocation.MyCommand) done."
 }
 
 try {
