@@ -22,6 +22,11 @@
  
 ;    3. This notice may not be removed or altered from any source distribution.
 
+; Command line options for ElasticSearch
+; /DATADIR= specify ElasticSearch data directory
+; /LOGSDIR= specify ElasticSearch logs directory
+; /REPODIR= specify ElasticSearch repository directory
+ 
 ; include for some of the windows messages defines
 !include "winmessages.nsh"
 
@@ -149,6 +154,10 @@ Var ElasticSearchRepositoryDirectory
 
 !define PowerShellExecFile1 `!insertmacro PowerShellExecFile1Macro`
 
+Function .onInit
+    Call GetCmdLineElasticConfiguration
+FunctionEnd
+
 !ifdef screenimage
  
 ; set up background image
@@ -172,8 +181,11 @@ FunctionEnd
 
 ; ---- ConfigureElasticSearch ----
 Function GetCmdLineElasticConfiguration
+	
 	Push $R0
 
+	DetailPrint "Setting Initial ElasticSearch Configuration Values"
+	
 	${GetParameters} $R0
 	
 	${GetOptions} $R0 /DATADIR= $ElasticSearchDataDirectory
@@ -190,22 +202,22 @@ Function GetCmdLineElasticConfiguration
     ${If} $ElasticSearchRepositoryDirectory == ''
         StrCpy $ElasticSearchRepositoryDirectory '$INSTDIR/elasticsearch/${SNAPSHOT_REPO_NAME}'
     ${EndIf}
-	
+
 FunctionEnd
 
 Function PageElasticSearchConfigurationShow
 	${Unless} ${SectionIsSelected} "Elasticsearch"
 		Abort
 	${EndUnless}
+	
 	SetOutPath $INSTDIR
+	
 	!insertmacro MUI_INSTALLOPTIONS_EXTRACT_AS "PageElasticSearchConfiguration.ini" "PageElasticSearchConfiguration.ini"
-	Call GetCmdLineElasticConfiguration
     !insertmacro MUI_HEADER_TEXT "$(PageElasticSearch_TITLE)" "$(PageElasticSearch_SUBTITLE)"
 	!insertmacro MUI_INSTALLOPTIONS_WRITE "PageElasticSearchConfiguration.ini" "Field 8" "State" $ElasticSearchDataDirectory
 	!insertmacro MUI_INSTALLOPTIONS_WRITE "PageElasticSearchConfiguration.ini" "Field 10" "State" $ElasticSearchLogsDirectory
 	!insertmacro MUI_INSTALLOPTIONS_WRITE "PageElasticSearchConfiguration.ini" "Field 12" "State" $ElasticSearchRepositoryDirectory
     !insertmacro MUI_INSTALLOPTIONS_DISPLAY "PageElasticSearchConfiguration.ini"
-	
 FunctionEnd
 
 Function PageElasticSearchConfigurationLeave
