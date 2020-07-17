@@ -252,12 +252,12 @@ FunctionEnd
 Section
   ClearErrors
   SetRegView 64
-  ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
-  ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$1" "JavaHome"
-  DetailPrint "$1 $2"
+  ReadRegStr $2 HKLM "SOFTWARE\AdoptOpenJDK\JDK\8.0.262.10\hotspot\MSI" "Path"
+  
+  DetailPrint "$2"
   
   IfErrors 0 NoAbort
-    MessageBox MB_OK "Couldn't find a Java Development Kit installed. Setup will exit now." 
+    MessageBox MB_OK "Couldn't find AdoptOpenJDK v8.0.262.10 installed. Setup will exit now." 
     Quit
    
   NoAbort:
