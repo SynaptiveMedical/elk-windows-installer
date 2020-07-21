@@ -41,7 +41,7 @@
 !define env_hkcu 'HKCU "Environment"'
 
 ;version is passed as a parameter during makensis invocation
-!define setup "dist\elk-x64-${version}.exe"
+!define setup "dist\elk-x64-${version}-OpenJDKfriendly.exe"
  
 ; change this to wherever the files to be packaged reside
 !define srcdir "temp"
@@ -250,16 +250,38 @@ FunctionEnd
 
 ; beginning (invisible) section
 Section
+  ;First look for AdoptOpenJDK
   ClearErrors
   SetRegView 64
+
+  StrCpy $0 0
+  loop:
+    EnumRegKey $1 HKLM SOFTWARE\AdoptOpenJDK\JDK\ $0
+    StrCmp $1 "" notFoundOpenJDK
+    IntOp $0 $0 + 1
+    ;Check if the first characters correspond to version 8
+    StrCpy $2 $1 2 0
+    StrCmp $2 "8." foundOpenJDK loop
+
+  foundOpenJDK:
+  ReadRegStr $2 HKLM "SOFTWARE\AdoptOpenJDK\JDK\$1\hotspot\MSI" "Path"
+  DetailPrint "$2"
+
+  IfErrors 0 NoAbort
+    DetailPrint "Couldn't find AdoptOpenJDK v8 installed. Checking for Java SDK next." 
+
+  notFoundOpenJDK:
+  
+  ;Look for JDK
+  ClearErrors
   ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
   ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$1" "JavaHome"
   DetailPrint "$1 $2"
-  
+
   IfErrors 0 NoAbort
-    MessageBox MB_OK "Couldn't find a Java Development Kit installed. Setup will exit now." 
+    MessageBox MB_OK "Couldn't find AdoptOpenJDK v8 or a Java Development Kit installed. Setup will exit now." 
     Quit
-   
+
   NoAbort:
     DetailPrint "Found JDK in path $2"
     StrCpy $R0 "$2"
