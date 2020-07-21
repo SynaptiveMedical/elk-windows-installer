@@ -41,7 +41,7 @@
 !define env_hkcu 'HKCU "Environment"'
 
 ;version is passed as a parameter during makensis invocation
-!define setup "dist\elk-x64-${version}.exe"
+!define setup "dist\elk-x64-${version}-OpenJDKfriendly.exe"
  
 ; change this to wherever the files to be packaged reside
 !define srcdir "temp"
