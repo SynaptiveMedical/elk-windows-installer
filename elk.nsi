@@ -236,8 +236,8 @@ Function ConfigureElasticSearch
     DetailPrint "DataPath '$ElasticSearchDataDirectory'"
 	DetailPrint "LogsPath '$ElasticSearchLogsDirectory'"
 	DetailPrint "RepoPath '$ElasticSearchRepositoryDirectory'"
-	DetailPrint "${CONFIG_TOOL_PATH}\ElasticSearchPathConfiguration.ps1 -ConfigFilePath '$INSTDIR\elasticsearch\config\elasticsearch.yml' -DataPath '$ElasticSearchDataDirectory' -LogsPath '$ElasticSearchLogsDirectory' -RepoPath '$ElasticSearchRepositoryDirectory'"
-	${PowerShellExecFile1} "${CONFIG_TOOL_PATH}\ElasticSearchPathConfiguration.ps1" '-ConfigFilePath "$INSTDIR\elasticsearch\config\elasticsearch.yml" -DataPath "$ElasticSearchDataDirectory" -LogsPath "$ElasticSearchLogsDirectory" -RepoPath "$ElasticSearchRepositoryDirectory"'
+	DetailPrint "${CONFIG_TOOL_PATH}\ElasticSearchConfiguration.ps1 -ConfigFilePath '$INSTDIR\elasticsearch\config\elasticsearch.yml' -DataPath '$ElasticSearchDataDirectory' -LogsPath '$ElasticSearchLogsDirectory' -RepoPath '$ElasticSearchRepositoryDirectory'"
+	${PowerShellExecFile1} "${CONFIG_TOOL_PATH}\ElasticSearchConfiguration.ps1" '-ConfigFilePath "$INSTDIR\elasticsearch\config\elasticsearch.yml" -DataPath "$ElasticSearchDataDirectory" -LogsPath "$ElasticSearchLogsDirectory" -RepoPath "$ElasticSearchRepositoryDirectory"'
 	Pop $R0
 	Pop $R1
 	DetailPrint "PowerShell Script returned: $R0"
@@ -330,7 +330,7 @@ Section
   
   CreateDirectory "${CONFIG_TOOL_PATH}"
   SetOutPath "${CONFIG_TOOL_PATH}"
-  File ElasticSearchPathConfiguration.ps1
+  File ElasticSearchConfiguration.ps1
 
   WriteUninstaller "${uninstaller}"
 SectionEnd
