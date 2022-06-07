@@ -230,7 +230,7 @@ Function ConfigureElasticSearch
 	Push $R0
 	Push $R1
 
-	DetailPrint "--- Configuring ElasticSearch paths"
+	DetailPrint "--- Configuring ElasticSearch"
 	
 	DetailPrint "ConfigFilePath '$INSTDIR\elasticsearch\config\elasticsearch.yml'"
     DetailPrint "DataPath '$ElasticSearchDataDirectory'"
@@ -244,7 +244,26 @@ Function ConfigureElasticSearch
 	DetailPrint "PowerShell Script result:"
 	DetailPrint "'$R1'"
 	
-	DetailPrint "--- Configuring ElasticSearch paths completed."		
+	DetailPrint "--- Configuring ElasticSearch completed."		
+	
+FunctionEnd
+
+Function ConfigureKibana
+	Push $R0
+	Push $R1
+
+	DetailPrint "--- Configuring Kibana"
+	
+	DetailPrint "ConfigFilePath '$INSTDIR\kibana\config\kibana.yml'"
+	DetailPrint "${CONFIG_TOOL_PATH}\KibanaConfiguration.ps1 -ConfigFilePath '$INSTDIR\kibana\config\kibana.yml'"
+	${PowerShellExecFile1} "${CONFIG_TOOL_PATH}\KibanaConfiguration.ps1" '-ConfigFilePath "$INSTDIR\kibana\config\kibana.yml"'
+	Pop $R0
+	Pop $R1
+	DetailPrint "PowerShell Script returned: $R0"
+	DetailPrint "PowerShell Script result:"
+	DetailPrint "'$R1'"
+	
+	DetailPrint "--- Configuring Kibana completed."		
 	
 FunctionEnd
 
@@ -331,6 +350,7 @@ Section
   CreateDirectory "${CONFIG_TOOL_PATH}"
   SetOutPath "${CONFIG_TOOL_PATH}"
   File ElasticSearchConfiguration.ps1
+  File KibanaConfiguration.ps1
 
   WriteUninstaller "${uninstaller}"
 SectionEnd
@@ -359,6 +379,8 @@ SectionEnd
 Section "Kibana" Kibana
   SetOutPath $INSTDIR\kibana
   File /r "${srcdir}\kibana\*"
+
+  Call ConfigureKibana
 
   ExecWait "$INSTDIR\scripts\kibana-install.bat" $0
   ExecWait "net start kibana" $0
