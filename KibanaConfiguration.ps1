@@ -1,17 +1,13 @@
 param(
-    [string]$ConfigFilePath = "C:\Elk\elasticsearch\config\elasticsearch.yml",
-    [string]$DataPath = "C:/Elk/elasticsearch/data",
-    [string]$LogsPath = "C:/Elk/elasticsearch/logs",
-    [string]$RepoPath = "C:/Elk/elasticsearch/AllSnapshots"
+    [string]$ConfigFilePath = 'C:\Elk\kibana\config\kibana.yml',
+    [string]$ServerHost = "0.0.0.0"
 )
 
-function Update-ElasticSearchConfiguration
+function Update-KibanaConfiguration
 {
     Param(
         [string]$ConfigFilePath,
-        [string]$DataPath,
-        [string]$LogsPath,
-        [string]$RepoPath
+        [string]$ServerHost
     )
 
     function Set-ConfigurationEntry {
@@ -53,13 +49,9 @@ function Update-ElasticSearchConfiguration
     
     [string[]]$FileLines = (Get-Content $ConfigFilePath)
 
-    $DataPathConfigEntry = "path.data: $DataPath" -replace '\\','/'
-    $LogsPathConfigEntry = "path.logs: $LogsPath" -replace '\\','/'
-    $RepoPathConfigEntry = "path.repo: $RepoPath" -replace '\\','/'
-
-    Set-ConfigurationEntry -FileLines ([ref]$FileLines) -MatchRegEx "^\s*path\.data\s*:\s*" -Value $DataPathConfigEntry
-    Set-ConfigurationEntry -FileLines ([ref]$FileLines) -MatchRegEx "^\s*path\.logs\s*:\s*" -Value $LogsPathConfigEntry
-    Set-ConfigurationEntry -FileLines ([ref]$FileLines) -MatchRegEx "^\s*path\.repo\s*:\s*" -Value $RepoPathConfigEntry
+    $ServerHost = "server.host: $ServerHost" -replace '\\','/'
+    
+    Set-ConfigurationEntry -FileLines ([ref]$FileLines) -MatchRegEx "^\s*server\.host\s*:\s*" -Value $ServerHost
 
     Set-Content $ConfigFilePath $FileLines
 
@@ -67,7 +59,7 @@ function Update-ElasticSearchConfiguration
 }
 
 try {
-    Update-ElasticSearchConfiguration -ConfigFilePath $ConfigFilePath -DataPath $DataPath -LogsPath $LogsPath -RepoPath $RepoPath
+    Update-KibanaConfiguration -ConfigFilePath $ConfigFilePath -ServerHost $ServerHost
     exit 0
 }
 Catch {
